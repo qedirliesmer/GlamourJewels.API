@@ -11,7 +11,7 @@ public class Order:BaseEntity
     //public Guid UserId { get; set; }
     //public AppUser User { get; set; }  // İstifadəçi əlaqəsi
 
-    public decimal TotalAmount { get; set; }  // Sifarişin ümumi qiyməti
+    public decimal TotalAmount { get; set; } = 0;  // Sifarişin ümumi qiyməti
     public string Status { get; set; } = "Pending"; // Pending, Processing, Shipped, Delivered, Cancelled
     public DateTime OrderDate { get; set; } = DateTime.UtcNow;
 

@@ -14,8 +14,8 @@ public class OrderItem:BaseEntity
     public Guid ProductId { get; set; }
     public Product Product { get; set; }
 
-    public int Quantity { get; set; }
-    public decimal Price { get; set; }  // o anki qiymət
+    public int Quantity { get; set; } = 1;
+    public decimal Price { get; set; } = 0; // o anki qiymət
     public decimal Discount { get; set; } = 0; // endirim varsa
 
     // Variant və seçim dəstəyi (böyük layihə üçün)
