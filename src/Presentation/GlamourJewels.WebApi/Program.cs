@@ -1,3 +1,4 @@
+using GlamourJewels.Application.Abstracts.Services;
 using GlamourJewels.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,11 @@ builder.Services.AddDbContext<GlamourJewelsDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
 }
 );
+builder.Services.AddScoped<IFileService>(provider =>
+{
+    var env = provider.GetRequiredService<IWebHostEnvironment>();
+    return new GlamourJewels.Persistence.Services.FileService(env.WebRootPath);
+});
 
 var app = builder.Build();
 
