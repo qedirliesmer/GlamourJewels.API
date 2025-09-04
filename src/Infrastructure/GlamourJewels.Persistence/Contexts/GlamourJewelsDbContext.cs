@@ -1,5 +1,6 @@
 ﻿using GlamourJewels.Domain.Entities;
 using GlamourJewels.Persistence.Configurations;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GlamourJewels.Persistence.Contexts;
 
-public class GlamourJewelsDbContext:DbContext
+public class GlamourJewelsDbContext:IdentityDbContext<AppUser>
 {
     public GlamourJewelsDbContext(DbContextOptions<GlamourJewelsDbContext> options):base(options)
     {  
