@@ -26,7 +26,7 @@ public class UserRegisterDtoValidator:AbstractValidator<UserRegisterDto>
         // böyük hərf, kiçik hərf, rəqəm və xüsusi simvol tələbi
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("Şifrə boş ola bilməz.")
-            .MinimumLength(6).WithMessage("Şifrə minimum 6 simvol olmalıdır.")
+            .MinimumLength(8).WithMessage("Şifrə minimum 8 simvol olmalıdır.")
             .Matches("[A-Z]").WithMessage("Şifrədə ən azı bir böyük hərf olmalıdır.")
             .Matches("[a-z]").WithMessage("Şifrədə ən azı bir kiçik hərf olmalıdır.")
             .Matches("[0-9]").WithMessage("Şifrədə ən azı bir rəqəm olmalıdır.")
