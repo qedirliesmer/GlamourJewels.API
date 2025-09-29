@@ -4,6 +4,7 @@ using GlamourJewels.Application.Shared;
 using GlamourJewels.Application.Shared.Settings;
 using GlamourJewels.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
@@ -22,13 +23,15 @@ namespace GlamourJewels.Persistence.Services;
 public class UserService : IUserService
 {
     private UserManager<AppUser> _userManager { get; }
+    private RoleManager<IdentityRole> _roleManager { get; }
     private SignInManager<AppUser> _signInManager { get; }
     public JWTSettings _jwtSetting { get; }
-    public UserService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IOptions<JWTSettings> jwtSetting)
+    public UserService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IOptions<JWTSettings> jwtSetting, RoleManager<IdentityRole> roleManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _jwtSetting = jwtSetting.Value;
+        _roleManager = roleManager;
     }
 
     public async Task<BaseResponse<string>> Register(UserRegisterDto dto)
@@ -100,17 +103,122 @@ public class UserService : IUserService
         return new("Token refreshed", tokenResponse, HttpStatusCode.OK);
     }
 
+    //public async Task<BaseResponse<string>> AddRole(UserAddRoleDto dto)
+    //{
+    //    var user = await _userManager.FindByIdAsync(dto.UserId.ToString());
+    //    if (user == null)
+    //    {
+    //       return new BaseResponse<string>("User not found", HttpStatusCode.NotFound);
+    //    }
+
+    //    var roleNames = new List<string>(); 
+
+    //    foreach (var roleId in dto.RolesId.Distinct())
+    //    {
+
+    //            var role = await _roleManager.FindByIdAsync(roleId.ToString());
+    //            if (role==null)
+    //            {
+    //                return new BaseResponse<string>($"Role with ID '{roleId}' not found",
+    //                    HttpStatusCode.NotFound);
+    //            }
+
+    //            if(!await _userManager.IsInRoleAsync(user, role.Name!))
+    //            {
+    //                var result=await _userManager.AddToRoleAsync(user,role.Name!);
+    //                if (!result.Succeeded)
+    //                {
+    //                    var errors=string.Join(";", result.Errors.Select(e=>e.Description));
+    //                    return new BaseResponse<string>($"Failed to add role '{role.Name}' to user:{errors}", HttpStatusCode.BadRequest);
+    //                }
+    //                roleNames.Add(role.Name!);
+    //            }    
+    //    }
+
+    //    return new BaseResponse<string>($"Successfully added roles: {string.Join(",", roleNames)} to user", HttpStatusCode.OK);
+
+
+    //}
+    public async Task<BaseResponse<string>> AddRole(UserAddRoleDto dto)
+    {
+        var user = await _userManager.FindByIdAsync(dto.UserId.ToString());
+        if (user == null)
+        {
+            return new BaseResponse<string>("User not found", HttpStatusCode.NotFound);
+        }
+
+        var roleNames = new List<string>();
+
+        foreach (var roleId in dto.RolesId.Distinct())
+        {
+            var role = await _roleManager.FindByIdAsync(roleId.ToString());
+            if (role == null)
+            {
+                return new BaseResponse<string>(
+                    $"Role with ID '{roleId}' not found",
+                    HttpStatusCode.NotFound
+                );
+            }
+
+            if (string.IsNullOrEmpty(role.Name))
+            {
+                return new BaseResponse<string>(
+                    $"Role with ID '{roleId}' has no valid name",
+                    HttpStatusCode.BadRequest
+                );
+            }
+
+            if (!await _userManager.IsInRoleAsync(user, role.Name))
+            {
+                var result = await _userManager.AddToRoleAsync(user, role.Name);
+                if (!result.Succeeded)
+                {
+                    var errors = string.Join(";", result.Errors.Select(e => e.Description));
+                    return new BaseResponse<string>(
+                        $"Failed to add role '{role.Name}' to user: {errors}",
+                        HttpStatusCode.BadRequest
+                    );
+                }
+                roleNames.Add(role.Name);
+            }
+        }
+
+        return new BaseResponse<string>(
+            $"Successfully added roles: {string.Join(",", roleNames)} to user",
+            HttpStatusCode.OK
+        );
+    }
+
     private async Task<TokenResponse> GenerateTokenAsync(AppUser user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_jwtSetting.SecretKey);
 
-        var claims = new[]
+        var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id),
-            new Claim(ClaimTypes.Email, user.Email!)
+        new Claim(ClaimTypes.NameIdentifier, user.Id),
+        new Claim(ClaimTypes.Email, user.Email!)
         };
 
+        var roles= await _userManager.GetRolesAsync(user);
+        foreach (var roleName in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, roleName));
+
+            var role=await _roleManager.FindByNameAsync(roleName);
+            if(role != null)
+            {
+                var roleClaims =await _roleManager.GetClaimsAsync(role);
+                var permissionClaims = roleClaims
+                    .Where(c => c.Type == "Permission")
+                    .Distinct();
+
+                foreach (var permissionClaim in permissionClaims)
+                {
+                    claims.Add(new Claim("Permission", permissionClaim.Value));
+                }
+            }
+        }
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
