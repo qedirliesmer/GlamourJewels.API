@@ -1,4 +1,6 @@
 using GlamourJewels.Application.Abstracts.Services;
+using GlamourJewels.Application.Shared;
+using GlamourJewels.Application.Shared.Helpers;
 using GlamourJewels.Application.Shared.Settings;
 using GlamourJewels.Domain.Entities;
 using GlamourJewels.Persistence.Contexts;
@@ -7,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -67,6 +70,17 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     .AddDefaultTokenProviders();
 builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JwtSettings"));
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JWTSettings>();
+
+builder.Services.AddAuthorization(options =>
+{
+    foreach (var permission in PermissionHelper.GetAllPermissionList())
+    {
+        options.AddPolicy(permission, policy =>
+        {
+            policy.RequireClaim("Permission", permission);
+        });
+    }
+});
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -94,6 +108,7 @@ builder.Services.AddScoped<IFileService>(provider =>
     return new GlamourJewels.Persistence.Services.FileService(env.WebRootPath);
 });
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
