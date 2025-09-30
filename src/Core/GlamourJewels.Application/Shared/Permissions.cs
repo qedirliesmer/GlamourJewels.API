@@ -75,6 +75,20 @@ public static class Permissions
         Create, View, ViewAll, Delete
     };
     }
+
+    public static class ReviewPermissions
+    {
+        public const string Create = "Review.Create";      // Buyer
+        public const string View = "Review.View";          // Buyer(own), Seller (own products), Admin, Moderator
+        public const string ViewAll = "Review.ViewAll";    // Admin, Moderator
+        public const string Approve = "Review.Approve";    // Admin, Moderator
+        public const string Delete = "Review.Delete";      // Admin (or Buyer own via service)
+
+        public static List<string> All = new()
+    {
+        Create, View, ViewAll, Approve, Delete
+    };
+    }
     public static class Account
     {
         public const string AddRole = "Account.AddRole";

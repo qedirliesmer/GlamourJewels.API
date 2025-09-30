@@ -81,7 +81,7 @@ var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JWTSetting
 
 builder.Services.AddAuthorization(options =>
 {
-    foreach (var permission in PermissionHelper.GetAllPermissionList().Concat(CartPermissions.All).Concat(FavoritePermissions.All))
+    foreach (var permission in PermissionHelper.GetAllPermissionList().Concat(CartPermissions.All).Concat(FavoritePermissions.All).Concat(ReviewPermissions.All))
     {
         options.AddPolicy(permission, policy =>
         {
