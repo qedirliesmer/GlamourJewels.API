@@ -24,6 +24,12 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
             .HasForeignKey(r => r.ProductId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // User əlaqəsi (1:N) → bir user-in çox review-u ola bilər
+        builder.HasOne(r => r.User)
+            .WithMany(u => u.Reviews)
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         // Rating
         builder.Property(r => r.Rating)
             .IsRequired();
