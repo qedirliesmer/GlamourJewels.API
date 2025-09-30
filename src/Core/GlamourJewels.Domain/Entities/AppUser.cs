@@ -11,4 +11,6 @@ public class AppUser:IdentityUser
     public string Fullname { get; set; } = null!;
     public string? RefreshToken { get; set; } = null!;
     public DateTime? ExpiryDate { get; set; }
+
+    public ICollection<Product> Products { get; set; } = new List<Product>();
 }

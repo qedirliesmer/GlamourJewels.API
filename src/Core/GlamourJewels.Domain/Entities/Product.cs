@@ -8,6 +8,8 @@ namespace GlamourJewels.Domain.Entities;
 
 public class Product:BaseEntity
 {
+    public string AppUserId { get; set; }  // kim yaratdı
+    public AppUser AppUser { get; set; }
     public string? Name { get; set; }
     public string? Slug { get; set; } // SEO üçün URL-friendly ad
     public string? Description { get; set; }
@@ -23,7 +25,7 @@ public class Product:BaseEntity
 
     // Əlaqələr
     public Guid CategoryId { get; set; }
-    public Category Category { get; set; }
+    public Category? Category { get; set; }
 
     // Navigasiyalar
     public ICollection<ProductImage> Images { get; set; } = new List<ProductImage>();
