@@ -5,22 +5,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
 
-namespace GlamourJewels.Persistence.Services;
+namespace GlamourJewels.Infrastructure.Services;
 
-public class FileService : IFileService
+public class FileService:IFileService
 {
-   
-        private readonly string _rootPath;
 
-        // IWebHostEnvironment əvəzinə birbaşa rootPath qəbul et
-        public FileService(string rootPath)
-        {
-            _rootPath = rootPath;
-        }
+    private readonly string _rootPath;
 
-        public async Task<string> UploadAsync(FileUploadDto file, string folder)
+    // IWebHostEnvironment əvəzinə birbaşa rootPath qəbul et
+    public FileService(string rootPath)
+    {
+        _rootPath = rootPath;
+    }
+
+    public async Task<string> UploadAsync(FileUploadDto file, string folder)
     {
         // Faylın yüklənəcəyi qovluğun path-i
         var uploadPath = Path.Combine(_rootPath, folder);
@@ -50,4 +49,3 @@ public class FileService : IFileService
         return false;
     }
 }
-

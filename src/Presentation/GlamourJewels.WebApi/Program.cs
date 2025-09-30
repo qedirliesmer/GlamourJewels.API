@@ -3,6 +3,7 @@ using GlamourJewels.Application.Shared;
 using GlamourJewels.Application.Shared.Helpers;
 using GlamourJewels.Application.Shared.Settings;
 using GlamourJewels.Domain.Entities;
+using GlamourJewels.Infrastructure.Services;
 using GlamourJewels.Persistence.Contexts;
 using GlamourJewels.Persistence.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -69,7 +70,9 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     .AddEntityFrameworkStores<GlamourJewelsDbContext>()
     .AddDefaultTokenProviders();
 builder.Services.Configure<JWTSettings>(builder.Configuration.GetSection("JwtSettings"));
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JWTSettings>();
+//var emailSettings=builder.Configuration.GetSection("EmailSettings").Get<EmailSettings>();
 
 builder.Services.AddAuthorization(options =>
 {
@@ -105,10 +108,11 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddScoped<IFileService>(provider =>
 {
     var env = provider.GetRequiredService<IWebHostEnvironment>();
-    return new GlamourJewels.Persistence.Services.FileService(env.WebRootPath);
+    return new GlamourJewels.Infrastructure.Services.FileService(env.WebRootPath);
 });
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
