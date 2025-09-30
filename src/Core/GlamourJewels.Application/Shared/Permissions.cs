@@ -50,7 +50,31 @@ public static class Permissions
             Create, ViewById, ViewAll, Update, Delete
         };
     }
+    public static class CartPermissions
+    {
+        public const string Create = "Cart.Create";    // Buyer
+        public const string View = "Cart.View";        // Buyer (own cart)
+        public const string Update = "Cart.Update";    // Admin
+        public const string Delete = "Cart.Delete";    // Admin
 
+        public static List<string> All = new()
+        {
+            Create, View, Update, Delete
+        };
+    }
+
+    public static class FavoritePermissions
+    {
+        public const string Create = "Favorite.Create";    // Buyer
+        public const string View = "Favorite.View";        // Buyer (own), Admin, Moderator
+        public const string ViewAll = "Favorite.ViewAll";  // Admin, Moderator
+        public const string Delete = "Favorite.Delete";    // Buyer (own) or Admin
+
+        public static List<string> All = new()
+    {
+        Create, View, ViewAll, Delete
+    };
+    }
     public static class Account
     {
         public const string AddRole = "Account.AddRole";

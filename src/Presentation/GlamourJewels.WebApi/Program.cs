@@ -17,6 +17,7 @@ using System.Reflection;
 using System.Text;
 using AutoMapper;
 using GlamourJewels.Application.Profiles;
+using static GlamourJewels.Application.Shared.Permissions;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -80,7 +81,7 @@ var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JWTSetting
 
 builder.Services.AddAuthorization(options =>
 {
-    foreach (var permission in PermissionHelper.GetAllPermissionList())
+    foreach (var permission in PermissionHelper.GetAllPermissionList().Concat(CartPermissions.All).Concat(FavoritePermissions.All))
     {
         options.AddPolicy(permission, policy =>
         {
@@ -123,6 +124,16 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+builder.Services.AddScoped<IOrderItemService, OrderItemService>();
+builder.Services.AddScoped<ICartRepository, CartRepository>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
+builder.Services.AddScoped<ICartItemService, CartItemService>();
+
+
+
+
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 var app = builder.Build();

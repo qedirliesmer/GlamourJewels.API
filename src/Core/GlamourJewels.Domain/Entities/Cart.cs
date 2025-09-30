@@ -8,10 +8,9 @@ namespace GlamourJewels.Domain.Entities;
 
 public class Cart:BaseEntity
 {
-    //public Guid UserId { get; set; }
-    //public AppUser User { get; set; }  // Gələcəkdə AppUser əlavə ediləcək
+    public Guid UserId { get; set; }
+    public AppUser User { get; set; }  // Gələcəkdə AppUser əlavə ediləcək
 
-    // Məhsullar
     public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 
     // Yeni xüsusiyyətlər

@@ -35,11 +35,10 @@ public class CartConfiguration : IEntityTypeConfiguration<Cart>
                    .HasForeignKey(ci => ci.CartId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            // Əgər gələcəkdə AppUser əlavə olunacaqsa (şərhə alınmış hissə)
-            // builder.HasOne(c => c.User)
-            //        .WithOne(u => u.Cart)
-            //        .HasForeignKey<Cart>(c => c.UserId)
-            //        .OnDelete(DeleteBehavior.Restrict);
-        }
+            builder.HasOne(c => c.User)
+                  .WithOne(u => u.Cart)
+                  .HasForeignKey<Cart>(c => c.UserId)
+                  .OnDelete(DeleteBehavior.Restrict);
+    }
  }
 
