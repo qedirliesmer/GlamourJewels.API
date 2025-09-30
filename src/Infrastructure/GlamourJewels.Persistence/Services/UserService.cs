@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Buffers.Text;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
@@ -17,21 +18,24 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace GlamourJewels.Persistence.Services;
 
 public class UserService : IUserService
 {
     private UserManager<AppUser> _userManager { get; }
+    private IEmailService _mailService { get; }
     private RoleManager<IdentityRole> _roleManager { get; }
     private SignInManager<AppUser> _signInManager { get; }
     public JWTSettings _jwtSetting { get; }
-    public UserService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IOptions<JWTSettings> jwtSetting, RoleManager<IdentityRole> roleManager)
+    public UserService(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IOptions<JWTSettings> jwtSetting, RoleManager<IdentityRole> roleManager, IEmailService mailService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _jwtSetting = jwtSetting.Value;
         _roleManager = roleManager;
+        _mailService=mailService;
     }
 
     public async Task<BaseResponse<string>> Register(UserRegisterDto dto)
@@ -60,6 +64,8 @@ public class UserService : IUserService
             }
             return new(errorsMessage.ToString(), HttpStatusCode.BadRequest);
         }
+        string confirmEmailLink= await GetEmailConfirmLink(newUser);
+        await _mailService.SendEmailAsync(new List<string> { newUser.Email }, "Email Confirmation", confirmEmailLink);
         return new("Successfully created", HttpStatusCode.Created);
     }
 
@@ -68,7 +74,12 @@ public class UserService : IUserService
         var existedUser = await _userManager.FindByEmailAsync(dto.Email);
         if (existedUser is null)
         {
-            return new("Email or password is wrong.", null, HttpStatusCode.NotFound);
+            return new("Email or password is wrong.", HttpStatusCode.NotFound);
+        }
+
+        if(!existedUser.EmailConfirmed)
+        {
+            return new("Please confirm your email", HttpStatusCode.BadRequest);
         }
         SignInResult signInResult = await _signInManager.PasswordSignInAsync
             (dto.Email, dto.Password, true, true);
@@ -103,42 +114,7 @@ public class UserService : IUserService
         return new("Token refreshed", tokenResponse, HttpStatusCode.OK);
     }
 
-    //public async Task<BaseResponse<string>> AddRole(UserAddRoleDto dto)
-    //{
-    //    var user = await _userManager.FindByIdAsync(dto.UserId.ToString());
-    //    if (user == null)
-    //    {
-    //       return new BaseResponse<string>("User not found", HttpStatusCode.NotFound);
-    //    }
-
-    //    var roleNames = new List<string>(); 
-
-    //    foreach (var roleId in dto.RolesId.Distinct())
-    //    {
-
-    //            var role = await _roleManager.FindByIdAsync(roleId.ToString());
-    //            if (role==null)
-    //            {
-    //                return new BaseResponse<string>($"Role with ID '{roleId}' not found",
-    //                    HttpStatusCode.NotFound);
-    //            }
-
-    //            if(!await _userManager.IsInRoleAsync(user, role.Name!))
-    //            {
-    //                var result=await _userManager.AddToRoleAsync(user,role.Name!);
-    //                if (!result.Succeeded)
-    //                {
-    //                    var errors=string.Join(";", result.Errors.Select(e=>e.Description));
-    //                    return new BaseResponse<string>($"Failed to add role '{role.Name}' to user:{errors}", HttpStatusCode.BadRequest);
-    //                }
-    //                roleNames.Add(role.Name!);
-    //            }    
-    //    }
-
-    //    return new BaseResponse<string>($"Successfully added roles: {string.Join(",", roleNames)} to user", HttpStatusCode.OK);
-
-
-    //}
+   
     public async Task<BaseResponse<string>> AddRole(UserAddRoleDto dto)
     {
         var user = await _userManager.FindByIdAsync(dto.UserId.ToString());
@@ -187,6 +163,31 @@ public class UserService : IUserService
             $"Successfully added roles: {string.Join(",", roleNames)} to user",
             HttpStatusCode.OK
         );
+    }
+
+    public async Task<BaseResponse<string>> ConfirmEmail(string userId, string token)
+    {
+        var existedUser = await _userManager.FindByIdAsync(userId);
+        if (existedUser is null)
+        {
+            return new("Email confirmation failed.", HttpStatusCode.BadRequest);
+        }
+
+        var result=await _userManager.ConfirmEmailAsync(existedUser, token);
+        if (!result.Succeeded)
+        {
+            return new("Email confirmation failed.", HttpStatusCode.BadRequest);
+        }
+
+        return new("Email confirmed successfully",null, HttpStatusCode.OK);
+    }
+
+    private async Task<string> GetEmailConfirmLink(AppUser user)
+    {
+        var token=await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        var link = $"https://localhost:7027/api/Accounts/ConfirmEmail?userId={user.Id}&token={HttpUtility.UrlEncode(token)}";
+        Console.WriteLine("Confirm Email link: "+link);
+        return link;
     }
 
     private async Task<TokenResponse> GenerateTokenAsync(AppUser user)
