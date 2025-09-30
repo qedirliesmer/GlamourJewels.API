@@ -37,6 +37,20 @@ public static class Permissions
         };
     }
 
+    public static class OrderPermissions
+    {
+        public const string Create = "Order.Create";          // Buyer
+        public const string ViewById = "Order.ViewById";      // Buyer(own), Seller, Admin, Moderator
+        public const string ViewAll = "Order.ViewAll";        // Admin, Moderator, Seller
+        public const string Update = "Order.Update";          // Admin
+        public const string Delete = "Order.Delete";          // Admin
+
+        public static List<string> All = new()
+        {
+            Create, ViewById, ViewAll, Update, Delete
+        };
+    }
+
     public static class Account
     {
         public const string AddRole = "Account.AddRole";

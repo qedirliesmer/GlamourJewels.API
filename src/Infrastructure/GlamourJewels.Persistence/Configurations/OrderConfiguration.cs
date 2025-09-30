@@ -56,11 +56,10 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .HasForeignKey(oi => oi.OrderId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // User əlaqəsi, əgər aktivləşdiriləcək
-        // builder.HasOne(o => o.User)
-        //     .WithMany(u => u.Orders)
-        //     .HasForeignKey(o => o.UserId)
-        //     .OnDelete(DeleteBehavior.Restrict);
-        //    
+         builder.HasOne(o => o.User)
+             .WithMany(u => u.Orders)
+             .HasForeignKey(o => o.UserId)
+             .OnDelete(DeleteBehavior.Restrict);
+
     }
 }

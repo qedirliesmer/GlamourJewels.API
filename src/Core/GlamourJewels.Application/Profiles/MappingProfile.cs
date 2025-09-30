@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using GlamourJewels.Application.DTOs.CategoryDTOs;
+using GlamourJewels.Application.DTOs.OrderDTOs;
 using GlamourJewels.Application.DTOs.ProductDTOs;
 using GlamourJewels.Domain.Entities;
 using System;
@@ -25,6 +26,16 @@ public class MappingProfile:Profile
         CreateMap<CategoryUpdateDto, Category>();
 
         CreateMap<Category, CategoryResponseDto>();
+
+        CreateMap<Order, OrderResponseDto>();
+
+        CreateMap<OrderCreateDto, Order>()
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Pending"))
+            .ForMember(dest => dest.IsPaid, opt => opt.MapFrom(src => src.PaymentMethod != "CashOnDelivery"))
+            .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => DateTime.UtcNow));
+
+        CreateMap<OrderUpdateDto, Order>()
+            .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
     }
 
 }
