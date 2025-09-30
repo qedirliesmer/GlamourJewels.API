@@ -89,6 +89,36 @@ public static class Permissions
         Create, View, ViewAll, Approve, Delete
     };
     }
+
+    public static class ProductImagePermissions
+    {
+        public const string Create = "ProductImage.Create";   // Seller, Admin
+        public const string Update = "ProductImage.Update";   // Seller(owner), Admin
+        public const string Delete = "ProductImage.Delete";   // Seller(owner), Admin
+        public const string View = "ProductImage.View";       // Buyer, Seller, Admin, Moderator
+
+        public static List<string> All = new() { Create, Update, Delete, View };
+    }
+
+    public static class ProductSpecificationPermissions
+    {
+        public const string Create = "ProductSpecification.Create";  // Seller, Admin
+        public const string Update = "ProductSpecification.Update";  // Seller, Admin
+        public const string Delete = "ProductSpecification.Delete";  // Seller, Admin
+        public const string View = "ProductSpecification.View";      // All roles
+
+        public static List<string> All = new() { Create, Update, Delete, View };
+    }
+
+    public static class ProductTagPermissions
+    {
+        public const string Create = "ProductTag.Create"; // Admin, Seller
+        public const string Update = "ProductTag.Update"; // Admin, Seller
+        public const string Delete = "ProductTag.Delete"; // Admin, Seller
+        public const string View = "ProductTag.View";     // Hər kəs
+
+        public static List<string> All = new() { Create, Update, Delete, View };
+    }
     public static class Account
     {
         public const string AddRole = "Account.AddRole";
@@ -110,4 +140,6 @@ public static class Permissions
             Create
         };
     }
+
+
 }

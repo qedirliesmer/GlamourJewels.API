@@ -6,6 +6,9 @@ using GlamourJewels.Application.DTOs.FavoriteDTOs;
 using GlamourJewels.Application.DTOs.OrderDTOs;
 using GlamourJewels.Application.DTOs.OrderItemDTOs;
 using GlamourJewels.Application.DTOs.ProductDTOs;
+using GlamourJewels.Application.DTOs.ProductImageDTOs;
+using GlamourJewels.Application.DTOs.ProductSpecificationDTOs;
+using GlamourJewels.Application.DTOs.ProductTagDTOs;
 using GlamourJewels.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -58,6 +61,20 @@ public class MappingProfile:Profile
 
         CreateMap<Favorite, FavoriteResponseDto>();
         CreateMap<FavoriteCreateDto, Favorite>();
+
+        CreateMap<ProductImage, ProductImageResponseDto>();
+        CreateMap<ProductImageCreateDto, ProductImage>();
+        CreateMap<ProductImageUpdateDto, ProductImage>()
+            .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+        CreateMap<ProductSpecificationCreateDto, ProductSpecification>();
+        CreateMap<ProductSpecificationUpdateDto, ProductSpecification>()
+            .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+        CreateMap<ProductSpecification, ProductSpecificationResponseDto>();
+
+        CreateMap<ProductTagCreateDto, ProductTag>();
+        CreateMap<ProductTagUpdateDto, ProductTag>();
+        CreateMap<ProductTag, ProductTagResponseDto>();
     }
 
 }

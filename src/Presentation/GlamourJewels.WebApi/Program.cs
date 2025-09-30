@@ -81,7 +81,7 @@ var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JWTSetting
 
 builder.Services.AddAuthorization(options =>
 {
-    foreach (var permission in PermissionHelper.GetAllPermissionList().Concat(CartPermissions.All).Concat(FavoritePermissions.All).Concat(ReviewPermissions.All))
+    foreach (var permission in PermissionHelper.GetAllPermissionList().Concat(CartPermissions.All).Concat(FavoritePermissions.All).Concat(ReviewPermissions.All).Concat(ProductImagePermissions.All).Concat(ProductSpecificationPermissions.All))
     {
         options.AddPolicy(permission, policy =>
         {
@@ -130,6 +130,19 @@ builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
 builder.Services.AddScoped<ICartItemService, CartItemService>();
+builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
+builder.Services.AddScoped<IFavoriteService, FavoriteService>();
+builder.Services.AddScoped<IProductImageService, ProductImageService>();
+builder.Services.AddScoped<IProductImageRepository, IProductImageRepository>();
+builder.Services.AddScoped<IProductSpecificationService, ProductSpecificationService>();
+builder.Services.AddScoped<IProductSpecificationRepository, ProductSpecificationRepository>();
+builder.Services.AddScoped<IProductTagRepository, ProductTagRepository>();
+builder.Services.AddScoped<IProductTagService, ProductTagService>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+
+
+
 
 
 
