@@ -8,19 +8,34 @@ namespace GlamourJewels.Application.Shared;
 
 public static class Permissions
 {
-    //public static class Category
-    //{
-    //    public const string Create = "Create";
-    //    public const string Update = "Update";
-    //    public const string Delete = "Delete";
+    public static class Product
+    {
+        public const string Create = "Product.Create";
+        public const string Update = "Product.Update";
+        public const string Delete = "Product.Delete";
 
-    //    public static List<string> All = new()
-    //    {
-    //        Create,
-    //        Update,
-    //        Delete
-    //    };
-    //}
+        public static List<string> All = new()
+        {
+            Create,
+            Update,
+            Delete
+        };
+    }
+    public static class Category
+    {
+        public const string Create = "Category.Create";
+        public const string Update = "Category.Update";
+        public const string Delete = "Category.Delete";
+        public const string View = "Category.View";
+
+        public static List<string> All = new()
+        {
+            Create,
+            Update,
+            Delete,
+            View
+        };
+    }
 
     public static class Account
     {

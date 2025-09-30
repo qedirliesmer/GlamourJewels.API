@@ -1,10 +1,13 @@
+using GlamourJewels.Application.Abstracts.Repositories;
 using GlamourJewels.Application.Abstracts.Services;
+using GlamourJewels.Application.Profiles;
 using GlamourJewels.Application.Shared;
 using GlamourJewels.Application.Shared.Helpers;
 using GlamourJewels.Application.Shared.Settings;
 using GlamourJewels.Domain.Entities;
 using GlamourJewels.Infrastructure.Services;
 using GlamourJewels.Persistence.Contexts;
+using GlamourJewels.Persistence.Repositories;
 using GlamourJewels.Persistence.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +15,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Text;
-
+using AutoMapper;
+using GlamourJewels.Application.Profiles;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -113,7 +117,11 @@ builder.Services.AddScoped<IFileService>(provider =>
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
-
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
