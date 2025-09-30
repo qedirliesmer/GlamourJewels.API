@@ -32,14 +32,13 @@ public class FavoriteConfiguration : IEntityTypeConfiguration<Favorite>
             .HasForeignKey(f => f.ProductId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // İstifadəçi əlaqəsi
-        //builder.HasOne(f => f.User)
-        //    .WithMany(u => u.Favorites)
-        //    .HasForeignKey(f => f.UserId)
-        //    .OnDelete(DeleteBehavior.Restrict);
+       
+        builder.HasOne(f => f.User)
+            .WithMany(u => u.Favorites)
+            .HasForeignKey(f => f.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-        //// Eyni məhsul eyni istifadəçi üçün bir dəfə favorit ola bilər
-        //builder.HasIndex(f => new { f.UserId, f.ProductId })
-        //       .IsUnique();
+        builder.HasIndex(f => new { f.UserId, f.ProductId })
+               .IsUnique();
     }
 }
